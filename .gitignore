@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# 给读者目检用的样品，含受版权保护的文献，不入库
+samples/
+
+# 构建产物
+.build/
+build/
