@@ -398,6 +398,9 @@ final class ReaderWindowController: NSObject, NSToolbarDelegate, NSToolbarItemVa
         case #selector(rotatePageRight(_:)), #selector(rotatePageLeft(_:)):
             // Not while typing into the search bar or the page number: ⌘R and ⌘L there are not about the page.
             return current != nil && !ReaderWindowController.isTyping(window.firstResponder)
+        case #selector(printDocument(_:)):
+            guard let session = current else { return false }
+            return !session.isSaving
         case #selector(saveDocumentAs(_:)) where current?.isAsleep == true:
             return false
         case #selector(saveDocumentAs(_:)):
@@ -1328,6 +1331,46 @@ final class ReaderWindowController: NSObject, NSToolbarDelegate, NSToolbarItemVa
         } else {
             try FileManager.default.moveItem(at: temporary, to: target)
         }
+    }
+
+    // MARK: Printing
+
+    /// 「文件 › 打印…」(⌘P): the tab in front as the reader sees it, unsaved marks and page edits
+    /// included, through the system's print panel. Marks print as they are drawn; a mark's note does not.
+    @objc func printDocument(_ sender: Any?) {
+        guard isFree, var session = current, !session.isSaving else { return }
+        closeMarkupPanel(keepingNote: true)
+        // A tab left asleep because its file could not be read is tried again first.
+        if session.isAsleep {
+            session.couldNotWake = false
+            refresh()
+            guard let woken = current, !woken.isAsleep else { return }
+            session = woken
+        }
+        // The document's own setting, which many journal PDFs carry: honoured, as 预览 does.
+        guard session.document.allowsPrinting else {
+            return warn(L("“%@” can’t be printed", session.title), L("The document’s author has set it not to allow printing."))
+        }
+        let info = NSPrintInfo.shared.copy() as! NSPrintInfo
+        // In a walk-through (LUMA_PRINT_TO=<path>): printed to that PDF file, without the panel.
+        let toFile = Benchmark.isRequested ? ProcessInfo.processInfo.environment["LUMA_PRINT_TO"].map { URL(fileURLWithPath: $0) } : nil
+        if Benchmark.isRequested && toFile == nil { return print("  (not printed: no LUMA_PRINT_TO)") }
+        if let toFile {
+            info.jobDisposition = .save
+            info.dictionary()[NSPrintInfo.AttributeKey.jobSavingURL] = toFile
+        }
+        guard let operation = session.document.printOperation(for: info, scalingMode: .pageScaleDownToFit, autoRotate: false) else {
+            return warn(L("“%@” can’t be printed", session.title), L("The system could not prepare it for printing."))
+        }
+        operation.jobTitle = session.title
+        if toFile != nil {
+            operation.showsPrintPanel = false
+            operation.showsProgressPanel = false
+            print("  (printed to a file: \(operation.run()))")
+            return
+        }
+        operation.printPanel.options.formUnion([.showsPreview, .showsPaperSize, .showsOrientation, .showsScaling])
+        operation.runModal(for: window, delegate: nil, didRun: nil, contextInfo: nil)
     }
 
     // MARK: Saving

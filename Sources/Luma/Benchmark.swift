@@ -17,10 +17,12 @@ import PDFKit
 ///                      folded away again; then during and after a search for a common word
 ///   LUMA_BENCH=marks   one document, which it CHANGES: selects text with real mouse events, marks it,
 ///                      saves, changes and deletes marks, saves again. Only ever give it a copy.
+///                      With LUMA_PRINT_TO=<path>, also prints, before the first save, to that PDF file.
 ///   LUMA_BENCH=pages   one document, which it CHANGES: from the thumbnails, turns a page, takes one out,
 ///                      drags one with mouse events, inserts the file LUMA_INSERT (another PDF), undoes and
 ///                      redoes, with LUMA_SAVE_AS=<path> saves as that new file (the original left as it was),
 ///                      saves, and reads the file the tab shows afresh.
+///                      With LUMA_PRINT_TO=<path>, also prints, before saving, to that PDF file.
 ///                      Only ever give it a copy.
 ///   LUMA_BENCH=extras  one document, which it CHANGES and REPLACES: copying, typing a page number, saving
 ///                      after another program changed the file, and reloading. Only ever give it a copy
@@ -732,6 +734,7 @@ enum Benchmark {
             ("m8-note-done", { reader.debugPressDone() }),
             ("m8a-reading", { report("marks made, not saved") }),
             ("m8b-note-sign-clicked", { print("  (note sign \(reader.debugClickNoteSign() ? "clicked" : "not found"))") }),
+            ("m8c-printed", { reader.printDocument(nil) }),
             ("m9-saved", { reader.saveDocument(nil) }),
             ("m9a-reading", { report("saved once") }),
             ("m10-underline-clicked", { reader.debugClick(at: point(onLine: 5)) }),
@@ -814,6 +817,7 @@ enum Benchmark {
             ("p6-redone", { reader.window.undoManager?.redo() }),
             ("p7-last-turned-left", { actions().turn(reader.currentPageCount - 1, false) }),
             ("p8-reading", { report("pages edited, not saved") }),
+            ("p8b-printed", { reader.printDocument(nil) }),
             ("p9-saved-as", {
                 // LUMA_SAVE_AS=<path>: 另存为 with everything unsaved. The tab then shows the new file and
                 // has nothing left to save, so the save below writes nothing; the original stays as it was.

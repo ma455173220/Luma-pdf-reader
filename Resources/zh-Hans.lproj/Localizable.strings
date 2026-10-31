@@ -193,3 +193,7 @@
 "A strikethrough changed on page %2$ld of “%1$@” can’t be saved into the original" = "「%1$@」第 %2$ld 页上一条改过的删除线存不进原件";
 "A strikethrough deleted on page %2$ld of “%1$@” can’t be saved into the original" = "「%1$@」第 %2$ld 页上一条删掉的删除线存不进原件";
 "This annotation goes together with another one (a reply, or a replacement made in another app), so 知白 neither changes nor deletes it." = "这条批注和另一条连在一起（是回复，或是在别的程序里做的「替换文字」），所以知白不改也不删它。";
+"Print…" = "打印…";
+"“%@” can’t be printed" = "「%@」不能打印";
+"The document’s author has set it not to allow printing." = "这份文档的作者设定了不允许打印。";
+"The system could not prepare it for printing." = "系统没能把它准备好打印。";

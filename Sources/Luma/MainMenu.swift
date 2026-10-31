@@ -49,6 +49,8 @@ enum MainMenu {
             add(m, L("Save"), #selector(ReaderWindowController.saveDocument(_:)), "s", target: reader)
             add(m, L("Save As…"), #selector(ReaderWindowController.saveDocumentAs(_:)), "s", [.command, .shift], target: reader)
             add(m, L("Reload"), #selector(ReaderWindowController.reloadDocument(_:)), target: reader)
+            m.addItem(.separator())
+            add(m, L("Print…"), #selector(ReaderWindowController.printDocument(_:)), "p", target: reader)
         }
 
         // Needed even before text can be selected in a page: without it ⌘V does nothing in the

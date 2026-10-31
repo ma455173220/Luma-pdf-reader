@@ -164,6 +164,7 @@ final class MarkupEditor {
                 return [quad.topLeft, quad.topRight, quad.bottomLeft, quad.bottomRight].map { NSValue(point: NSPoint(x: $0.x - bounds.minX, y: $0.y - bounds.minY)) }
             }
             annotation.color = colour.color
+            annotation.shouldPrint = true  // as saving writes it (/F 4)
             if let note { annotation.contents = note }
             page.addAnnotation(annotation)
             added[ObjectIdentifier(annotation)] = (page, annotation)
@@ -442,6 +443,7 @@ final class MarkupEditor {
         let annotation = PDFAnnotation(bounds: bounds, forType: PDFAnnotationSubtype(rawValue: addition.kind.rawValue), withProperties: nil)
         annotation.quadrilateralPoints = points.map { NSValue(point: NSPoint(x: $0.x - bounds.minX, y: $0.y - bounds.minY)) }
         annotation.color = NSColor(srgbRed: addition.red, green: addition.green, blue: addition.blue, alpha: 1)
+        annotation.shouldPrint = true  // as saving writes it (/F 4)
         if let note = addition.note, !note.isEmpty { annotation.contents = note }
         page.addAnnotation(annotation)
         added[ObjectIdentifier(annotation)] = (page, annotation)
