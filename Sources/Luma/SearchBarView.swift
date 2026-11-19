@@ -30,6 +30,9 @@ final class SearchBarView: NSView, NSSearchFieldDelegate {
     override init(frame: NSRect) {
         super.init(frame: frame)
         field.placeholderString = L("Find in Document")
+        // A search field made in code does not scroll: a long query is cut off and the caret
+        // cannot reach its end. Scrolling lets the text follow the caret and a drag, as elsewhere.
+        field.cell?.isScrollable = true
         field.delegate = self
         field.sendsSearchStringImmediately = false
         field.sendsWholeSearchString = false
